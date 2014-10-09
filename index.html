@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Advanced jQuery Email Address Validator by Mailgun</title>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    <style>
+    .success{color:#2ECC40;}
+    .error{color:#FF4136;}
+    .warning{color:#FF851B;}
+    </style>
+  </head>
+
+  <body>
+    <h1>Advanced jQuery Email Address Validator by Mailgun</h1>
+    <form>
+      <div>
+        <label for="email">Email address</label><br>
+        <input type="email" name="email" id="email">
+        <div id="status"></div>
+      </div>
+      <div>
+        <button type="submit" id="validate_submit">Validate</button>
+      </div>
+    </form>
+
+    <p>Try some invalid addresses:
+      <ul>
+        <li><strong>john@gmail.com</strong>: Does not meet Gmail minimum local-part length of 6 characters.</li>
+        <li><strong>john.smith@gmaill.com</strong>: Invalid, because gmaill.com does not have valid MX records.</li>
+        <li><strong>john@microsoft.io</strong>: Invalid because while microsoft.io does not have any MX records, it does have fallback A records, but alas no Mail Exchanger responds.</li>
+      </ul>
+    </p>
+    <p>Try some valid addresses:
+      <ul>
+        <li><strong>john.smith@gmail.com</strong>: Meets Gmail 6 character minimum and all other requirements.</li>
+        <li><strong>"hello world"@domain.com</strong>: Meets pure syntax checks.</li>
+      </ul>
+    </p>
+    <p>Remember to <a href="http://www.mailgun.com">sign up for Mailgun</a> to receive your public API key.</p>
+
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="mailgun_validator.js"></script>
+    <script>
+      // document ready
+      $(function() {
+
+        // capture all enter and do nothing
+        $('#email').keypress(function(e) {
+          if(e.which == 13) {
+            $('#email').trigger('focusout');
+            return false;
+          }
+        });
+
+        // capture clicks on validate and do nothing
+        $("#validate_submit").click(function() {
+          return false;
+        });
+
+        // attach jquery plugin to validate address
+        $('#email').mailgun_validator({
+          api_key: 'MAILGUN_PUBKEY', // replace this with your Mailgun public API key
+          in_progress: validation_in_progress,
+          success: validation_success,
+          error: validation_error,
+        });
+
+      });
+
+
+
+      // while the lookup is performing
+      function validation_in_progress() {
+        $('#status').html("<img src='loading.gif' height='16'/>");
+      }
+
+
+
+      // if email successfull validated
+      function validation_success(data) {
+        $('#status').html(get_suggestion_str(data['is_valid'], data['did_you_mean']));
+      }
+
+
+
+      // if email is invalid
+      function validation_error(error_message) {
+        $('#status').html(error_message);
+      }
+
+
+
+      // suggest a valid email
+      function get_suggestion_str(is_valid, alternate) {
+        if (alternate) {
+          return '<span class="warning">Did you mean <em>' +  alternate + '</em>?</span>';
+        } else if (is_valid) {
+          return '<span class="success">Address is valid.</span>';
+        } else {
+          return '<span class="error">Address is invalid.</span>';
+        }
+      }
+
+
+    </script>
+  </body>
+</html>
