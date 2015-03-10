@@ -96,10 +96,14 @@
 
       // suggest a valid email
       function get_suggestion_str(is_valid, alternate) {
-        if (alternate) {
+        if (is_valid) {
+          var result = '<span class="success">Address is valid.</span>';
+          if (alternate) {
+            result += '<span class="warning"> (Though did you mean <em>' + alternate + '</em>?)</span>';
+          }
+          return result
+        } else if (alternate) {
           return '<span class="warning">Did you mean <em>' +  alternate + '</em>?</span>';
-        } else if (is_valid) {
-          return '<span class="success">Address is valid.</span>';
         } else {
           return '<span class="error">Address is invalid.</span>';
         }
