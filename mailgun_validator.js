@@ -57,7 +57,7 @@
 	            options.error(error_message);
 	        }
 	        else {
-	            console.log(error_message);
+	            if (console) console.log(error_message);
 	        }
 	        return;
 	    }
@@ -69,7 +69,7 @@
 	
 	    // require api key
 	    if (options && options.api_key == undefined) {
-	        console.log('Please pass in api_key to mailgun_validator.');
+	        if (console) console.log('Please pass in api_key to mailgun_validator.');
 	    }
 	
 	    var success = false;
@@ -95,7 +95,7 @@
 	                options.error(error_message);
 	            }
 	            else {
-	                console.log(error_message);
+	                if (console) console.log(error_message);
 	            }
 	        }
 	    });
@@ -108,7 +108,7 @@
 	                options.error(error_message);
 	            }
 	            else {
-	                console.log(error_message);
+	                if (console) console.log(error_message);
 	            }
 	        }
 	    }, 30000);
