@@ -71,37 +71,9 @@
 	    if (options && options.api_key == undefined) {
 	        if (console) console.log('Please pass in api_key to mailgun_validator.');
 	    }
-	
-	    var success = false;
-	
-	    // make ajax call to get validation results
-	    element.mailgunRequest = $.ajax({
-	        type: "GET",
-	        url: 'https://api.mailgun.net/v2/address/validate?callback=?',
-	        data: { address: address_text, api_key: options.api_key },
-	        dataType: "jsonp",
-	        crossDomain: true,
-	        success: function(data, status_text) {
-	            success = true;
-	            if (options && options.success) {
-	                options.success(data);
-	            }
-	        },
-	        error: function(request, status_text, error) {
-	            success = true;
-	            error_message = 'Error occurred, unable to validate address.';
-	
-	            if (options && options.error) {
-	                options.error(error_message);
-	            }
-	            else {
-	                if (console) console.log(error_message);
-	            }
-	        }
-	    });
-	
-	    // timeout incase of some kind of internal server error
-	    setTimeout(function() {
+		
+		// timeout incase of some kind of internal server error
+	    var timeoutID = setTimeout(function() {
 	        error_message = 'Error occurred, unable to validate address.';
 	        if (!success) {
 	        	//Abort existing AJAX Request for a true timeout
@@ -117,7 +89,32 @@
 	                if (console) console.log(error_message);
 	            }
 	        }
-	    }, 30000);
+	    }, 30000); //30 seconds
+		
+	    // make ajax call to get validation results
+	    element.mailgunRequest = $.ajax({
+	        type: "GET",
+	        url: 'https://api.mailgun.net/v2/address/validate?callback=?',
+	        data: { address: address_text, api_key: options.api_key },
+	        dataType: "jsonp",
+	        crossDomain: true,
+	        success: function(data, status_text) {
+	            clearTimeout(timeoutID);
+	            if (options && options.success) {
+	                options.success(data);
+	            }
+	        },
+	        error: function(request, status_text, error) {
+	            clearTimeout(timeoutID);
+	            error_message = 'Error occurred, unable to validate address.';
 	
+	            if (options && options.error) {
+	                options.error(error_message);
+	            }
+	            else {
+	                if (console) console.log(error_message);
+	            }
+	        }
+	    });
 	}
 })( jQuery );
