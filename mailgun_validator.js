@@ -39,7 +39,7 @@
 	
 	
 	function run_validator(address_text, options, element) {
-		//Abort existing AJAX Requests to prevent flooding
+		//Abort existing AJAX Request to prevent flooding
 		if(element.mailgunRequest) {
 			element.mailgunRequest.abort();
 			element.mailgunRequest = null;
@@ -104,6 +104,12 @@
 	    setTimeout(function() {
 	        error_message = 'Error occurred, unable to validate address.';
 	        if (!success) {
+	        	//Abort existing AJAX Request for a true timeout
+				if(element.mailgunRequest) {
+					element.mailgunRequest.abort();
+					element.mailgunRequest = null;
+				}
+		
 	            if (options && options.error) {
 	                options.error(error_message);
 	            }
