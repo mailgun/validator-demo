@@ -30,14 +30,21 @@
 (function( $ ) {
 	$.fn.mailgun_validator = function(options) {
 	    return this.each(function() {
-	        $(this).focusout(function() {
-	            run_validator($(this).val(), options);
+	    	var thisElement = $(this);
+	        thisElement.focusout(function() {
+	            run_validator(thisElement.val(), options, thisElement);
 	        });
 	    });
 	};
 	
 	
-	function run_validator(address_text, options) {
+	function run_validator(address_text, options, element) {
+		//Abort existing AJAX Requests to prevent flooding
+		if(element.mailgunRequest) {
+			element.mailgunRequest.abort();
+			element.mailgunRequest = null;
+		}
+		
 	    // don't run validator without input
 	    if (!address_text) {
 	        return;
@@ -68,7 +75,7 @@
 	    var success = false;
 	
 	    // make ajax call to get validation results
-	    $.ajax({
+	    element.mailgunRequest = $.ajax({
 	        type: "GET",
 	        url: 'https://api.mailgun.net/v2/address/validate?callback=?',
 	        data: { address: address_text, api_key: options.api_key },
