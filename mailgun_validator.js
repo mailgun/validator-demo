@@ -49,7 +49,14 @@
 	    if (!address_text) {
 	        return;
 	    }
-	
+		
+		// don't run dupicate calls
+		if (element.mailgunLastSuccessReturn) {
+			if (address_text == element.mailgunLastSuccessReturn.address) { 
+				return;
+			}
+		}
+		
 	    // length check
 	    if (address_text.length > 512) {
 	        error_message = 'Stream exceeds maxiumum allowable length of 512.';
@@ -61,7 +68,7 @@
 	        }
 	        return;
 	    }
-	
+		
 	    // validator is in progress
 	    if (options && options.in_progress) {
 	        options.in_progress();
@@ -100,6 +107,8 @@
 	        crossDomain: true,
 	        success: function(data, status_text) {
 	            clearTimeout(timeoutID);
+	            
+	            element.mailgunLastSuccessReturn = data;
 	            if (options && options.success) {
 	                options.success(data);
 	            }
