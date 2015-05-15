@@ -65,9 +65,9 @@
 	    var error_message = false;
 	    if (address_text.length > 512)
 	    	error_message = 'Email address exceeds maxiumum allowable length of 512.';
-	    else if (-1 === address_text.indexOf('@'))
+	    else if (1 !== address_text.indexOf('@'))
 	    	error_message = 'Email address must contain only one @.';
-	    	
+	    
 	    if (error_message) {
 	        if (options && options.error) {
 	            options.error(error_message);
