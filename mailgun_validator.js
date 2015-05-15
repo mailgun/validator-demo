@@ -32,11 +32,15 @@
 	    return this.each(function() {
 	    	var thisElement = $(this);
 	        thisElement.focusout(function() {
-	            run_validator(thisElement.val(), options, thisElement);
+	        	//Trim string and autocorrect whitespace issues
+	        	var elementValue = thisElement.val();
+	        	elementValue = $.trim(elementValue);
+	        	thisElement.val(elementValue);
+	        	
+	            run_validator(elementValue, options, thisElement);
 	        });
 	    });
 	};
-	
 	
 	function run_validator(address_text, options, element) {
 		//Abort existing AJAX Request to prevent flooding
@@ -57,9 +61,14 @@
 			}
 		}
 		
-	    // length check
-	    if (address_text.length > 512) {
-	        error_message = 'Stream exceeds maxiumum allowable length of 512.';
+	    // length and @ syntax check
+	    var error_message = false;
+	    if (address_text.length > 512)
+	    	error_message = 'Email address exceeds maxiumum allowable length of 512.';
+	    else if (-1 === address_text.indexOf('@'))
+	    	error_message = 'Email address must contain only one @.';
+	    	
+	    if (error_message) {
 	        if (options && options.error) {
 	            options.error(error_message);
 	        }
