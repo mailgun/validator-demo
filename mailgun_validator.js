@@ -31,11 +31,14 @@
 	$.fn.mailgun_validator = function(options) {
 	    return this.each(function() {
 	    	var thisElement = $(this);
-	        thisElement.focusout(function() {
+	        thisElement.focusout(function(e) {
 	        	//Trim string and autocorrect whitespace issues
 	        	var elementValue = thisElement.val();
 	        	elementValue = $.trim(elementValue);
 	        	thisElement.val(elementValue);
+	        	
+	        	//Attach event to options
+	        	options.e = e;
 	        	
 	            run_validator(elementValue, options, thisElement);
 	        });
@@ -54,11 +57,16 @@
 	        return;
 	    }
 		
+		// validator is in progress
+	    if (options && options.in_progress) {
+	        options.in_progress(options.e);
+	    }
+		
 		// don't run dupicate calls
 		if (element.mailgunLastSuccessReturn) {
 			if (address_text == element.mailgunLastSuccessReturn.address) {
 				if (options && options.success) {
-	                options.success(element.mailgunLastSuccessReturn);
+	                options.success(element.mailgunLastSuccessReturn, options.e);
 	            }
 				return;
 			}
@@ -73,17 +81,12 @@
 	    
 	    if (error_message) {
 	        if (options && options.error) {
-	            options.error(error_message);
+	            options.error(error_message, options.e);
 	        }
 	        else {
 	            if (console) console.log(error_message);
 	        }
 	        return;
-	    }
-		
-	    // validator is in progress
-	    if (options && options.in_progress) {
-	        options.in_progress();
 	    }
 	
 	    // require api key
@@ -102,7 +105,7 @@
 				}
 		
 	            if (options && options.error) {
-	                options.error(error_message);
+	                options.error(error_message, options.e);
 	            }
 	            else {
 	                if (console) console.log(error_message);
@@ -122,7 +125,7 @@
 	            
 	            element.mailgunLastSuccessReturn = data;
 	            if (options && options.success) {
-	                options.success(data);
+	                options.success(data, options.e);
 	            }
 	        },
 	        error: function(request, status_text, error) {
@@ -130,7 +133,7 @@
 	            error_message = 'Error occurred, unable to validate address.';
 	
 	            if (options && options.error) {
-	                options.error(error_message);
+	                options.error(error_message, options.e);
 	            }
 	            else {
 	                if (console) console.log(error_message);
