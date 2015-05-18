@@ -56,7 +56,10 @@
 		
 		// don't run dupicate calls
 		if (element.mailgunLastSuccessReturn) {
-			if (address_text == element.mailgunLastSuccessReturn.address) { 
+			if (address_text == element.mailgunLastSuccessReturn.address) {
+				if (options && options.success) {
+	                options.success(element.mailgunLastSuccessReturn);
+	            }
 				return;
 			}
 		}
