@@ -37,9 +37,20 @@ $.fn.mailgun_validator = function(options) {
 };
 
 
+// storage object for caching of validation results
+var run_validator_cache = {};
+
 function run_validator(address_text, options) {
     // don't run validator without input
     if (!address_text) {
+        return;
+    }
+
+    // succeed early if there is a cached validation result for this address
+    if (address_text in run_validator_cache) {
+        if (options && options.success) {
+            options.success(run_validator_cache[address_text]);
+        }
         return;
     }
 
@@ -76,6 +87,10 @@ function run_validator(address_text, options) {
         crossDomain: true,
         success: function(data, status_text) {
             success = true;
+
+            // store result for caching
+            run_validator_cache[address_text] = data;
+
             if (options && options.success) {
                 options.success(data);
             }
