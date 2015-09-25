@@ -32,6 +32,9 @@
         return this.each(function() {
             var thisElement = $(this);
             thisElement.focusout(function(e) {
+                //Fix for buggy event timestamps in Firefox and IE
+                //https://bugzilla.mozilla.org/show_bug.cgi?id=238041
+                e.timeStamp = Date.now();
                 //Trim string and autocorrect whitespace issues
                 var elementValue = thisElement.val();
                 elementValue = $.trim(elementValue);
