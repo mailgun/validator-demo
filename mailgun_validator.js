@@ -8,6 +8,13 @@
 //        in_progress: in_progress_callback, // called when request is made to validator
 //        success: success_callback,         // called when validator has returned
 //        error: validation_error,           // called when an error reaching the validator has occured
+//        messages: {
+//            errors: {                     // customize error messages
+//                  max_of_512: "Email address exceeds maximum allowable length of 512.",
+//                  must_contain: "Email address must contain only one @.",
+//                  unable_to_validate: "Error occurred, unable to validate address."
+//            }
+//        }
 //    });
 //
 //
@@ -28,7 +35,17 @@
 //
 
 (function( $ ) {
-    $.fn.mailgun_validator = function(options) {
+    $.fn.mailgun_validator = function(settings) {
+        var defaults = {
+            messages: {
+                errors: {
+                    max_of_512: "Email address exceeds maximum allowable length of 512.",
+                    must_contain: "Email address must contain only one @.",
+                    unable_to_validate: "Error occurred, unable to validate address."
+                }
+            }
+        }
+        var options = $.extend( {}, defaults, settings );
         return this.each(function() {
             var thisElement = $(this);
             thisElement.focusout(function(e) {
@@ -75,9 +92,9 @@
         // length and @ syntax check
         var error_message = false;
         if (address_text.length > 512)
-            error_message = 'Email address exceeds maxiumum allowable length of 512.';
+            error_message = options.messages.errors.max_of_512;
         else if (1 !== address_text.split('@').length-1)
-            error_message = 'Email address must contain only one @.';
+            error_message = options.messages.errors.must_contain;
 
         if (error_message) {
             if (options && options.error) {
@@ -96,7 +113,7 @@
 
         // timeout incase of some kind of internal server error
         var timeoutID = setTimeout(function() {
-            error_message = 'Error occurred, unable to validate address.';
+            error_message = options.messages.errors.enable_validate;
             if (!success) {
                 //Abort existing AJAX Request for a true timeout
                 if(element.mailgunRequest) {
@@ -130,7 +147,7 @@
             },
             error: function(request, status_text, error) {
                 clearTimeout(timeoutID);
-                error_message = 'Error occurred, unable to validate address.';
+                error_message = options.messages.errors.enable_validate;
 
                 if (options && options.error) {
                     options.error(error_message, options.e);

@@ -21,6 +21,13 @@ Attaching to a form field:
        in_progress: in_progress_callback, // called when request is made to validator
        success: success_callback,         // called when validator has returned
        error: validation_error,           // called when an error reaching the validator has occured
+       messages: {
+         errors: {                        // customize error messages
+           max_of_512: "Email address exceeds maximum allowable length of 512.",
+           must_contain: "Email address must contain only one @.",
+           unable_to_validate: "Error occurred, unable to validate address."
+         }
+       }
    });
 ```
 
