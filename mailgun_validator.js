@@ -62,7 +62,7 @@
             options.in_progress(options.e);
         }
 
-        // don't run dupicate calls
+        // don't run duplicate calls
         if (element.mailgunLastSuccessReturn) {
             if (address_text == element.mailgunLastSuccessReturn.address) {
                 if (options && options.success) {
