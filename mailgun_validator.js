@@ -97,19 +97,17 @@
         // timeout incase of some kind of internal server error
         var timeoutID = setTimeout(function() {
             error_message = 'Error occurred, unable to validate address.';
-            if (!success) {
-                //Abort existing AJAX Request for a true timeout
-                if(element.mailgunRequest) {
-                    element.mailgunRequest.abort();
-                    element.mailgunRequest = null;
-                }
+            //Abort existing AJAX Request for a true timeout
+            if(element.mailgunRequest) {
+                element.mailgunRequest.abort();
+                element.mailgunRequest = null;
+            }
 
-                if (options && options.error) {
-                    options.error(error_message, options.e);
-                }
-                else {
-                    if (console) console.log(error_message);
-                }
+            if (options && options.error) {
+                options.error(error_message, options.e);
+            }
+            else {
+                if (console) console.log(error_message);
             }
         }, 30000); //30 seconds
 
